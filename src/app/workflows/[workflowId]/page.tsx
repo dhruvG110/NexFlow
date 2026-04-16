@@ -17,17 +17,17 @@ export default async function WorkflowDetailPage({
   params,
 }: WorkflowPageProps) {
   const { workflowId } = await params;
-  const [workflows, definition] = await Promise.all([
-    getWorkflowSummaries(),
-    getWorkflowById(workflowId),
-  ]);
+const definition = await getWorkflowById(workflowId);
 
-  const workflow = workflows.find((item) => item.id === workflowId);
+if (!definition) {
+  notFound();
+}
 
-  if (!workflow) {
-    notFound();
-  }
-
+const workflow = {
+  id: workflowId,
+  name: definition.name ?? "Workflow",
+  version: definition.version ?? 1,
+};
   return (
     <AppShell
       eyebrow="Workflow Editor"

@@ -62,22 +62,26 @@ export async function getWorkflowSummaries(): Promise<WorkflowSummary[]> {
 
 export async function getWorkflowById(
   workflowId: string,
-): Promise<WorkflowDefinition> {
-  return withFallback(async () => {
-    const prisma = getPrismaClient();
+): Promise<WorkflowDefinition | null> {
+  const prisma = getPrismaClient();
 
-    if (!prisma) {
-      return sampleWorkflowDefinition;
-    }
+  if (!prisma) return sampleWorkflowDefinition;
 
-    const workflow = await prisma.workflow.findUnique({
-      where: {
-        id: workflowId,
+  const workflow = await prisma.workflow.findUnique({
+    where: { id: workflowId },
+    include: {
+      versions: {
+        orderBy: { versionNumber: "desc" },
+        take: 1,
       },
-    });
+    },
+  });
 
-    return (workflow?.draftDefinition as WorkflowDefinition | undefined) ?? sampleWorkflowDefinition;
-  }, sampleWorkflowDefinition);
+  const version = workflow?.versions?.[0];
+
+  if (!version) return null;
+
+  return version.definition as WorkflowDefinition;
 }
 
 export async function getWorkflowRunSummaries(): Promise<WorkflowRunSummary[]> {
