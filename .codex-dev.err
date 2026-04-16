@@ -1,0 +1,616 @@
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+(node:61404) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51780) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52404) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58636) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+(node:53572) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+⨯ Error: A workflow must contain exactly one trigger node
+    at compileWorkflowDefinition (src\lib\workflow\compiler.ts:55:11)
+    at dispatchWorkflowRun (src\lib\runtime\orchestration.ts:20:45)
+    at POST (src\app\api\workflows\[workflowId]\test-run\route.ts:22:43)
+  53 |
+  54 |   if (triggerNodes.length !== 1) {
+> 55 |     throw new Error("A workflow must contain exactly one trigger node");
+     |           ^
+  56 |   }
+  57 |
+  58 |   const triggerNode = triggerNodes[0];
+⨯ Error: A workflow must contain exactly one trigger node
+    at compileWorkflowDefinition (src\lib\workflow\compiler.ts:55:11)
+    at dispatchWorkflowRun (src\lib\runtime\orchestration.ts:20:45)
+    at POST (src\app\api\workflows\[workflowId]\test-run\route.ts:22:43)
+  53 |
+  54 |   if (triggerNodes.length !== 1) {
+> 55 |     throw new Error("A workflow must contain exactly one trigger node");
+     |           ^
+  56 |   }
+  57 |
+  58 |   const triggerNode = triggerNodes[0];
+[browser] Uncaught SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input
+    at _0x44c343.<computed>.<computed>.<computed> [as json] (file://http://localhost:3000/_next/static/chunks/node_modules_next_dist_038ce8_._.js:17:78)
+    at postWorkflowAction (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:958:37)
+    at async (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:1001:49)
+[browser] Uncaught SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input
+    at _0x44c343.<computed>.<computed>.<computed> [as json] (file://http://localhost:3000/_next/static/chunks/node_modules_next_dist_038ce8_._.js:17:78)
+    at postWorkflowAction (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:958:37)
+    at async (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:1001:49)
+⨯ Error: A workflow must contain exactly one trigger node
+    at compileWorkflowDefinition (src\lib\workflow\compiler.ts:55:11)
+    at dispatchWorkflowRun (src\lib\runtime\orchestration.ts:20:45)
+    at POST (src\app\api\workflows\[workflowId]\test-run\route.ts:22:43)
+  53 |
+  54 |   if (triggerNodes.length !== 1) {
+> 55 |     throw new Error("A workflow must contain exactly one trigger node");
+     |           ^
+  56 |   }
+  57 |
+  58 |   const triggerNode = triggerNodes[0];
+[browser] Uncaught SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input
+    at _0x44c343.<computed>.<computed>.<computed> [as json] (file://http://localhost:3000/_next/static/chunks/node_modules_next_dist_038ce8_._.js:17:78)
+    at postWorkflowAction (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:958:37)
+    at async (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:1001:49)
+(node:52048) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+⨯ Error: A workflow must contain exactly one trigger node
+    at compileWorkflowDefinition (src\lib\workflow\compiler.ts:55:11)
+    at publishDraftVersion (src\lib\workflow\service.ts:20:45)
+    at POST (src\app\api\workflows\[workflowId]\publish\route.ts:22:40)
+  53 |
+  54 |   if (triggerNodes.length !== 1) {
+> 55 |     throw new Error("A workflow must contain exactly one trigger node");
+     |           ^
+  56 |   }
+  57 |
+  58 |   const triggerNode = triggerNodes[0];
+[browser] Uncaught SyntaxError: Failed to execute 'json' on 'Response': Unexpected end of JSON input
+    at _0x44c343.<computed>.<computed>.<computed> [as json] (file://http://localhost:3000/_next/static/chunks/node_modules_next_dist_038ce8_._.js:17:78)
+    at postWorkflowAction (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:958:37)
+    at async (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/src_0xcjs-0._.js:1024:49)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+(node:65004) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62760) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57380) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:60944) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64764) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58168) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:59872) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./instrumentation-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when [turbopack]/browser/dev/hmr-client/hmr-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./instrumentation-client.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+    at module evaluation (src\components\layout\app-shell.tsx:13:1)
+    at <unknown> (src\app\workflows\[workflowId]\page.tsx:5:1)
+    at module evaluation (C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:1580:30)
+    at module evaluation (C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:1687:47)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL,
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+    at module evaluation (src\components\layout\app-shell.tsx:13:1)
+    at <unknown> (src\app\workflows\[workflowId]\page.tsx:5:1)
+    at module evaluation (C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:1580:30)
+    at module evaluation (C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:1687:47)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  page: '/workflows/wf_customer_router'
+}
+⨯ Failed to generate static paths for /workflows/[workflowId]:
+Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  type: 'ZodError'
+}
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  type: 'ZodError',
+  page: '/workflows/wf_customer_router'
+}
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  type: 'ZodError',
+  page: '/workflows/wf_customer_router'
+}
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  type: 'ZodError',
+  page: '/workflows/wf_customer_router'
+}
+[browser] Uncaught ZodError: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (file://C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:122:23)
+    at module evaluation (file://C:\Users\gupta\OneDrive\Documents\New project\.next\dev\server\chunks\ssr\[root-of-the-server]__0fp7z96._.js:155:143)
+⨯ Error [ZodError]: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "NEXT_PUBLIC_SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_DSN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_AUTH_TOKEN"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_ORG"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  },
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 1,
+    "inclusive": true,
+    "path": [
+      "SENTRY_PROJECT"
+    ],
+    "message": "Too small: expected string to have >=1 characters"
+  }
+]
+    at module evaluation (src\lib\env.ts:22:30)
+    at module evaluation (src\lib\auth\session.ts:3:1)
+  20 | });
+  21 |
+> 22 | export const env = envSchema.parse({
+     |                              ^
+  23 |   NODE_ENV: process.env.NODE_ENV,
+  24 |   DATABASE_URL: process.env.DATABASE_URL,
+  25 |   DIRECT_URL: process.env.DIRECT_URL, {
+  type: 'ZodError',
+  page: '/workflows/wf_customer_router'
+}
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
+[browser] Console Ninja failed to send logs, refreshing the page may help; also see https://tinyurl.com/37x8b79t: logger websocket error {
+  args: [ { id: [33m1776170771681[39m, tool: [32m'next.js browser'[39m }, [90mundefined[39m ],
+  method: [32m'errorHandlerInstalled'[39m,
+  version: [32m'1.0.0'[39m
+} (file://C:/Users/gupta/OneDrive/Documents/New project/.next/dev/static/chunks/node_modules_next_dist_038ce8_._.js:1084:13)
