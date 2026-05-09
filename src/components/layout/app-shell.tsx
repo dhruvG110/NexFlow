@@ -9,7 +9,9 @@ import {
   Workflow,
 } from "lucide-react";
 
+import { AuthControls } from "@/components/layout/auth-controls";
 import { Badge } from "@/components/ui/badge";
+import { featureFlags } from "@/lib/env";
 import { getAppSession } from "@/lib/auth/session";
 
 const navigation = [
@@ -95,7 +97,10 @@ export async function AppShell({
                 {description}
               </p>
             </div>
-            {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+            <div className="flex flex-wrap items-center gap-3">
+              {actions}
+              <AuthControls hasClerk={featureFlags.hasClerk} mode="shell" />
+            </div>
           </div>
 
           <div className="mt-6">{children}</div>

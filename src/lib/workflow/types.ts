@@ -59,70 +59,85 @@ export type RetryPolicy = {
   strategy: "fixed" | "exponential";
 };
 
+export type ManualTriggerConfig = {
+  samplePayload: Record<string, unknown>;
+};
+
+export type WebhookTriggerConfig = {
+  source: string;
+  path: string;
+  signatureHeader: string;
+};
+
+export type ScheduleTriggerConfig = {
+  cron: string;
+  timezone: string;
+};
+
+export type HttpRequestConfig = {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  url: string;
+  headers: Record<string, string>;
+  bodyTemplate: string;
+};
+
+export type SlackMessageConfig = {
+  channel: string;
+  messageTemplate: string;
+};
+
+export type GoogleSheetsAppendConfig = {
+  spreadsheetId: string;
+  sheetName: string;
+  rowMapping: Record<string, string>;
+};
+
+export type NotionCreatePageConfig = {
+  databaseId: string;
+  titleTemplate: string;
+  contentTemplate: string;
+};
+
+export type AirtableCreateRecordConfig = {
+  baseId: string;
+  tableId: string;
+  fieldMapping: Record<string, string>;
+};
+
+export type HubspotCreateRecordConfig = {
+  objectType: "contact" | "company" | "deal";
+  pipelineId: string;
+  fieldMapping: Record<string, string>;
+};
+
+export type BranchConfig = {
+  expression: string;
+  trueLabel: string;
+  falseLabel: string;
+};
+
+export type LoopConfig = {
+  iterateOn: string;
+  itemAlias: string;
+  maxIterations: number;
+};
+
+export type WorkflowNodeConfigMap = {
+  manualTrigger: ManualTriggerConfig;
+  webhookTrigger: WebhookTriggerConfig;
+  scheduleTrigger: ScheduleTriggerConfig;
+  httpRequest: HttpRequestConfig;
+  slackMessage: SlackMessageConfig;
+  googleSheetsAppend: GoogleSheetsAppendConfig;
+  notionCreatePage: NotionCreatePageConfig;
+  airtableCreateRecord: AirtableCreateRecordConfig;
+  hubspotCreateRecord: HubspotCreateRecordConfig;
+  branch: BranchConfig;
+  loop: LoopConfig;
+};
+
 export type WorkflowNodeConfig =
-  | {
-      nodeType: "manualTrigger";
-      samplePayload: Record<string, unknown>;
-    }
-  | {
-      nodeType: "webhookTrigger";
-      source: string;
-      path: string;
-      signatureHeader: string;
-    }
-  | {
-      nodeType: "scheduleTrigger";
-      cron: string;
-      timezone: string;
-    }
-  | {
-      nodeType: "httpRequest";
-      method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-      url: string;
-      headers: Record<string, string>;
-      bodyTemplate: string;
-    }
-  | {
-      nodeType: "slackMessage";
-      channel: string;
-      messageTemplate: string;
-    }
-  | {
-      nodeType: "googleSheetsAppend";
-      spreadsheetId: string;
-      sheetName: string;
-      rowMapping: Record<string, string>;
-    }
-  | {
-      nodeType: "notionCreatePage";
-      databaseId: string;
-      titleTemplate: string;
-      contentTemplate: string;
-    }
-  | {
-      nodeType: "airtableCreateRecord";
-      baseId: string;
-      tableId: string;
-      fieldMapping: Record<string, string>;
-    }
-  | {
-      nodeType: "hubspotCreateRecord";
-      objectType: "contact" | "company" | "deal";
-      pipelineId: string;
-      fieldMapping: Record<string, string>;
-    }
-  | {
-      nodeType: "branch";
-      expression: string;
-      trueLabel: string;
-      falseLabel: string;
-    }
-  | {
-      nodeType: "loop";
-      iterateOn: string;
-      itemAlias: string;
-      maxIterations: number;
-    };
+  WorkflowNodeConfigMap[WorkflowNodeType];
 
 export type WorkflowCanvasNode = {
   id: string;

@@ -1,5 +1,7 @@
 import {
+  type BranchConfig,
   type CompiledWorkflowDefinition,
+  type LoopConfig,
   type WorkflowCanvasNode,
   type WorkflowDefinition,
 } from "@/lib/workflow/types";
@@ -18,10 +20,26 @@ function triggerSourceFromNode(node: WorkflowCanvasNode) {
   }
 }
 
+function getConditionExpression(node: WorkflowCanvasNode) {
+  if (node.nodeType !== "branch") {
+    return "true";
+  }
+
+  return (node.config as BranchConfig).expression;
+}
+
+function getLoopConfig(node: WorkflowCanvasNode) {
+  if (node.nodeType !== "loop") {
+    return null;
+  }
+
+  return node.config as LoopConfig;
+}
+
 export function compileWorkflowDefinition(
   input: WorkflowDefinition | unknown,
 ): CompiledWorkflowDefinition {
-  const definition = workflowDefinitionSchema.parse(input);
+  const definition = workflowDefinitionSchema.parse(input) as WorkflowDefinition;
   const nodesById = new Map(definition.nodes.map((node) => [node.id, node]));
   const edgeIds = new Set<string>();
   const outgoing = new Map<string, string[]>();
@@ -119,20 +137,25 @@ export function compileWorkflowDefinition(
       .filter((node) => node.kind === "CONDITION")
       .map((node) => ({
         nodeId: node.id,
-        expression:
-          node.config.nodeType === "branch" ? node.config.expression : "true",
+        expression: getConditionExpression(node),
       })),
     loops: definition.nodes.flatMap((node) => {
-      if (node.kind !== "LOOP" || node.config.nodeType !== "loop") {
+      if (node.kind !== "LOOP") {
+        return [];
+      }
+
+      const loopConfig = getLoopConfig(node);
+
+      if (!loopConfig) {
         return [];
       }
 
       return [
         {
           nodeId: node.id,
-          iterateOn: node.config.iterateOn,
-          itemAlias: node.config.itemAlias,
-          maxIterations: node.config.maxIterations,
+          iterateOn: loopConfig.iterateOn,
+          itemAlias: loopConfig.itemAlias,
+          maxIterations: loopConfig.maxIterations,
         },
       ];
     }),

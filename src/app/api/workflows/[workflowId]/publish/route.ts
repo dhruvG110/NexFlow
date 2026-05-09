@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { getAppSession } from "@/lib/auth/session";
-import { getWorkflowById } from "@/lib/data/repository";
-import { publishDraftVersion } from "@/lib/workflow/service";
+import {
+  getWorkflowById,
+  publishWorkflow,
+} from "@/lib/data/repository";
 import type { WorkflowDefinition } from "@/lib/workflow/types";
 
 type RouteContext = {
@@ -19,17 +21,35 @@ export async function POST(request: Request, context: RouteContext) {
   };
 
   const definition = body.definition ?? (await getWorkflowById(workflowId));
-  const published = publishDraftVersion({
-    workflowId,
-    currentVersionNumber: definition.version,
-    actorId: session.userId,
-    actorEmail: session.email,
-    definition,
-  });
 
-  return NextResponse.json({
-    ok: true,
-    message: `Published version ${published.versionNumber} for ${definition.name}.`,
-    data: published,
-  });
+  if (!definition) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Workflow not found",
+      },
+      { status: 404 },
+    );
+  }
+
+  try {
+    const published = await publishWorkflow(workflowId, definition, {
+      id: session.userId,
+      email: session.email,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      message: `Published version ${published.versionNumber} for ${definition.name}.`,
+      data: published,
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Failed to publish workflow",
+      },
+      { status: 500 },
+    );
+  }
 }

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { WorkflowEditor } from "@/components/workflow/workflow-editor";
 import { Badge } from "@/components/ui/badge";
-import { getWorkflowById, getWorkflowSummaries } from "@/lib/data/repository";
+import { getWorkflowById } from "@/lib/data/repository";
 
 type WorkflowPageProps = {
   params: Promise<{

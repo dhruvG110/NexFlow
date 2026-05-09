@@ -23,7 +23,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 40, y: 180 },
       description: "Receives product events from your app.",
       config: {
-        nodeType: "webhookTrigger",
         source: "product",
         path: "/api/webhooks/product/:secret",
         signatureHeader: "x-product-signature",
@@ -38,7 +37,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 280, y: 180 },
       description: "Fetches the latest account profile from your API.",
       config: {
-        nodeType: "httpRequest",
         method: "POST",
         url: "https://api.example.com/v1/accounts/enrich",
         headers: {
@@ -56,7 +54,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 520, y: 180 },
       description: "Routes enterprise and growth accounts differently.",
       config: {
-        nodeType: "branch",
         expression: 'input.plan === "enterprise"',
         trueLabel: "Enterprise path",
         falseLabel: "Growth path",
@@ -71,7 +68,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 760, y: 80 },
       description: "Posts priority accounts into the launch channel.",
       config: {
-        nodeType: "slackMessage",
         channel: "#launch-ops",
         messageTemplate:
           "Priority account {{input.accountName}} generated {{input.eventType}}",
@@ -86,7 +82,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 760, y: 260 },
       description: "Expands related contacts and creates CRM follow-ups.",
       config: {
-        nodeType: "loop",
         iterateOn: "input.contacts",
         itemAlias: "contact",
         maxIterations: 50,
@@ -101,7 +96,6 @@ export const sampleWorkflowDefinition: WorkflowDefinition = {
       position: { x: 1000, y: 260 },
       description: "Creates or updates an expansion deal in HubSpot.",
       config: {
-        nodeType: "hubspotCreateRecord",
         objectType: "deal",
         pipelineId: "expansion-pipeline",
         fieldMapping: {

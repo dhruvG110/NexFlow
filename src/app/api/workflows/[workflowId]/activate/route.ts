@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { getWorkflowById } from "@/lib/data/repository";
+import { getAppSession } from "@/lib/auth/session";
+import {
+  getWorkflowById,
+  saveWorkflowDraft,
+} from "@/lib/data/repository";
+import type { WorkflowDefinition } from "@/lib/workflow/types";
 
 type RouteContext = {
   params: Promise<{
@@ -8,17 +13,48 @@ type RouteContext = {
   }>;
 };
 
-export async function POST(_: Request, context: RouteContext) {
+export async function POST(request: Request, context: RouteContext) {
   const { workflowId } = await context.params;
-  const workflow = await getWorkflowById(workflowId);
+  const session = await getAppSession();
+  const body = (await request.json().catch(() => ({}))) as {
+    definition?: WorkflowDefinition;
+  };
+  const definition = body.definition ?? (await getWorkflowById(workflowId));
 
-  return NextResponse.json({
-    ok: true,
-    message: `Workflow ${workflow.name} is now marked active for ${workflow.triggerSource.toLowerCase()} triggers.`,
-    data: {
+  if (!definition) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Workflow not found",
+      },
+      { status: 404 },
+    );
+  }
+
+  try {
+    const draft = await saveWorkflowDraft(
       workflowId,
-      triggerSource: workflow.triggerSource,
-      version: workflow.version,
-    },
-  });
+      definition,
+      session.userId,
+    );
+
+    return NextResponse.json({
+      ok: true,
+      message: "Draft saved.",
+      data: {
+        workflowId,
+        triggerSource: draft.definition.triggerSource,
+        version: draft.versionNumber,
+        activeVersionId: draft.activeVersionId,
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Failed to save draft",
+      },
+      { status: 500 },
+    );
+  }
 }

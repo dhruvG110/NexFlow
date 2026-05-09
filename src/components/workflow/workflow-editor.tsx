@@ -35,8 +35,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { compileWorkflowDefinition } from "@/lib/workflow/compiler";
+import { getDefaultConfig } from "@/lib/workflow/defaults";
 import { cn } from "@/lib/utils";
 import type {
+  AirtableCreateRecordConfig,
+  BranchConfig,
+  GoogleSheetsAppendConfig,
+  HubspotCreateRecordConfig,
+  HttpRequestConfig,
+  LoopConfig,
+  NotionCreatePageConfig,
+  ScheduleTriggerConfig,
+  SlackMessageConfig,
+  WebhookTriggerConfig,
   WorkflowCanvasEdge,
   WorkflowCanvasNode,
   WorkflowDefinition,
@@ -52,9 +63,11 @@ type AutomationNodeData = {
 
 type AutomationFlowNode = Node<AutomationNodeData, "automation">;
 
+type PaletteTemplate = Omit<WorkflowCanvasNode, "id" | "position" | "config">;
+
 const paletteTemplates: Record<
   WorkflowNodeType,
-  Omit<WorkflowCanvasNode, "id" | "position">
+  PaletteTemplate
 > = {
   manualTrigger: {
     label: "Manual Trigger",
@@ -62,10 +75,6 @@ const paletteTemplates: Record<
     provider: "CORE",
     nodeType: "manualTrigger",
     description: "Starts a workflow manually from the dashboard.",
-    config: {
-      nodeType: "manualTrigger",
-      samplePayload: {},
-    },
   },
   webhookTrigger: {
     label: "Webhook Trigger",
@@ -73,12 +82,6 @@ const paletteTemplates: Record<
     provider: "CORE",
     nodeType: "webhookTrigger",
     description: "Receives signed events from your application.",
-    config: {
-      nodeType: "webhookTrigger",
-      source: "product",
-      path: "/api/webhooks/product/:secret",
-      signatureHeader: "x-product-signature",
-    },
   },
   scheduleTrigger: {
     label: "Schedule Trigger",
@@ -86,11 +89,6 @@ const paletteTemplates: Record<
     provider: "CORE",
     nodeType: "scheduleTrigger",
     description: "Runs on a cron schedule.",
-    config: {
-      nodeType: "scheduleTrigger",
-      cron: "0 9 * * *",
-      timezone: "Asia/Calcutta",
-    },
   },
   httpRequest: {
     label: "HTTP Request",
@@ -98,13 +96,6 @@ const paletteTemplates: Record<
     provider: "HTTP",
     nodeType: "httpRequest",
     description: "Fetch or post data to any HTTP API.",
-    config: {
-      nodeType: "httpRequest",
-      method: "POST",
-      url: "https://api.example.com/v1/action",
-      headers: {},
-      bodyTemplate: '{"accountId":"{{input.accountId}}"}',
-    },
   },
   slackMessage: {
     label: "Slack Message",
@@ -112,11 +103,6 @@ const paletteTemplates: Record<
     provider: "SLACK",
     nodeType: "slackMessage",
     description: "Notify a Slack channel when the flow hits a milestone.",
-    config: {
-      nodeType: "slackMessage",
-      channel: "#launch-ops",
-      messageTemplate: "New account update for {{input.accountName}}",
-    },
   },
   googleSheetsAppend: {
     label: "Append to Sheet",
@@ -124,12 +110,6 @@ const paletteTemplates: Record<
     provider: "GOOGLE_SHEETS",
     nodeType: "googleSheetsAppend",
     description: "Write a structured row into Google Sheets.",
-    config: {
-      nodeType: "googleSheetsAppend",
-      spreadsheetId: "sheet-id",
-      sheetName: "Ops",
-      rowMapping: { account: "accountName" },
-    },
   },
   notionCreatePage: {
     label: "Create Notion Page",
@@ -137,12 +117,6 @@ const paletteTemplates: Record<
     provider: "NOTION",
     nodeType: "notionCreatePage",
     description: "Publish a rich document into a Notion database.",
-    config: {
-      nodeType: "notionCreatePage",
-      databaseId: "database-id",
-      titleTemplate: "{{input.accountName}} brief",
-      contentTemplate: "{{input.summary}}",
-    },
   },
   airtableCreateRecord: {
     label: "Create Airtable Record",
@@ -150,12 +124,6 @@ const paletteTemplates: Record<
     provider: "AIRTABLE",
     nodeType: "airtableCreateRecord",
     description: "Insert a new Airtable row for intake or review.",
-    config: {
-      nodeType: "airtableCreateRecord",
-      baseId: "base-id",
-      tableId: "table-id",
-      fieldMapping: { Account: "accountName" },
-    },
   },
   hubspotCreateRecord: {
     label: "Create HubSpot Record",
@@ -163,12 +131,6 @@ const paletteTemplates: Record<
     provider: "HUBSPOT",
     nodeType: "hubspotCreateRecord",
     description: "Create or update a CRM record inside HubSpot.",
-    config: {
-      nodeType: "hubspotCreateRecord",
-      objectType: "deal",
-      pipelineId: "default",
-      fieldMapping: { dealname: "accountName" },
-    },
   },
   branch: {
     label: "Branch",
@@ -176,12 +138,6 @@ const paletteTemplates: Record<
     provider: "CORE",
     nodeType: "branch",
     description: "Split execution with an explicit true/false decision.",
-    config: {
-      nodeType: "branch",
-      expression: 'input.plan === "enterprise"',
-      trueLabel: "Enterprise",
-      falseLabel: "Growth",
-    },
   },
   loop: {
     label: "Loop",
@@ -189,12 +145,6 @@ const paletteTemplates: Record<
     provider: "CORE",
     nodeType: "loop",
     description: "Repeat downstream steps for each item in an array.",
-    config: {
-      nodeType: "loop",
-      iterateOn: "input.items",
-      itemAlias: "item",
-      maxIterations: 25,
-    },
   },
 };
 
@@ -204,7 +154,7 @@ function toFlowNode(node: WorkflowCanvasNode): AutomationFlowNode {
     type: "automation",
     position: node.position,
     data: {
-      label: node.label,
+      label: node.label ?? "Untitled node",
       description: node.description,
       kind: node.kind,
       provider: node.provider,
@@ -261,6 +211,50 @@ type WorkflowEditorProps = {
   initialDefinition: WorkflowDefinition;
 };
 
+type WorkflowAction = "activate" | "publish" | "test-run";
+type TestRunStatus = "IDLE" | "RUNNING" | "SUCCESS" | "FAILED";
+type WorkflowActionResponse = {
+  message?: string;
+  error?: string;
+  data?: {
+    version?: number;
+    versionNumber?: number;
+  };
+};
+
+async function readWorkflowActionResponse(
+  response: Response,
+): Promise<WorkflowActionResponse> {
+  const payload = await response.text();
+
+  if (!payload.trim()) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(payload) as WorkflowActionResponse;
+  } catch {
+    return {
+      error: response.ok
+        ? "Received an invalid response from the server."
+        : `Request failed with status ${response.status}.`,
+    };
+  }
+}
+
+function getTestRunBadgeVariant(status: TestRunStatus) {
+  switch (status) {
+    case "RUNNING":
+      return "info" as const;
+    case "SUCCESS":
+      return "success" as const;
+    case "FAILED":
+      return "danger" as const;
+    default:
+      return "default" as const;
+  }
+}
+
 function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
   const [definitionNodes, setDefinitionNodes] = useState(initialDefinition.nodes);
   const [definitionEdges, setDefinitionEdges] = useState(initialDefinition.edges);
@@ -273,9 +267,25 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(
     initialDefinition.nodes[0]?.id,
   );
+  const [currentVersion, setCurrentVersion] = useState(
+    initialDefinition.version,
+  );
+  const [publishedVersions, setPublishedVersions] = useState<number[]>([
+    initialDefinition.version,
+  ]);
   const [catalogQuery, setCatalogQuery] = useState("");
   const [statusMessage, setStatusMessage] = useState("Draft is ready to publish.");
+  const [testRunStatus, setTestRunStatus] = useState<TestRunStatus>("IDLE");
   const deferredCatalogQuery = useDeferredValue(catalogQuery);
+  const currentDefinition = useMemo(
+    () => ({
+      ...initialDefinition,
+      version: currentVersion,
+      nodes: definitionNodes,
+      edges: definitionEdges,
+    }),
+    [currentVersion, definitionEdges, definitionNodes, initialDefinition],
+  );
 
   const selectedNode = definitionNodes.find((node) => node.id === selectedNodeId);
   const filteredPalette = useMemo(() => {
@@ -292,11 +302,7 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
   const compiledPreview = useMemo(() => {
     try {
       return JSON.stringify(
-        compileWorkflowDefinition({
-          ...initialDefinition,
-          nodes: definitionNodes,
-          edges: definitionEdges,
-        }),
+        compileWorkflowDefinition(currentDefinition),
         null,
         2,
       );
@@ -305,11 +311,14 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
         error instanceof Error ? error.message : "Unknown error"
       }`;
     }
-  }, [definitionEdges, definitionNodes, initialDefinition]);
+  }, [currentDefinition]);
 
   const syncCanvasIntoDefinition = (nextCanvasNodes: AutomationFlowNode[]) => {
+    const nextNodeIds = new Set(nextCanvasNodes.map((node) => node.id));
     setDefinitionNodes((current) =>
-      current.map((node) => {
+      current
+        .filter((node) => nextNodeIds.has(node.id))
+        .map((node) => {
         const nextNode = nextCanvasNodes.find((candidate) => candidate.id === node.id);
 
         if (!nextNode) {
@@ -319,20 +328,34 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
         return {
           ...node,
           position: nextNode.position,
+          label: nextNode.data.label,
+          description: nextNode.data.description,
         };
       }),
+    );
+    setDefinitionEdges((current) =>
+      current.filter(
+        (edge) => nextNodeIds.has(edge.source) && nextNodeIds.has(edge.target),
+      ),
+    );
+    setCanvasEdges((current) =>
+      current.filter(
+        (edge) => nextNodeIds.has(edge.source) && nextNodeIds.has(edge.target),
+      ),
     );
   };
 
   const updateSelectedNode = (
     updater: (node: WorkflowCanvasNode) => WorkflowCanvasNode,
   ) => {
-    if (!selectedNodeId) {
+    if (!selectedNodeId || !selectedNode) {
       return;
     }
 
+    const nextSelectedNode = updater(selectedNode);
+
     setDefinitionNodes((current) =>
-      current.map((node) => (node.id === selectedNodeId ? updater(node) : node)),
+      current.map((node) => (node.id === selectedNodeId ? nextSelectedNode : node)),
     );
     setCanvasNodes((current) =>
       current.map((node) =>
@@ -341,17 +364,20 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
               ...node,
               data: {
                 ...node.data,
-                ...(selectedNode
-                  ? {
-                      label: updater(selectedNode).label,
-                      description: updater(selectedNode).description,
-                    }
-                  : {}),
+                label: nextSelectedNode.label,
+                description: nextSelectedNode.description,
               },
             }
           : node,
       ),
     );
+  };
+
+  const updateSelectedNodeConfig = (config: WorkflowCanvasNode["config"]) => {
+    updateSelectedNode((node) => ({
+      ...node,
+      config,
+    }));
   };
 
   const onNodeChanges = (changes: NodeChange<AutomationFlowNode>[]) => {
@@ -363,7 +389,20 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
   };
 
   const onEdgeChanges = (changes: Parameters<typeof applyEdgeChanges>[0]) => {
-    setCanvasEdges((current) => applyEdgeChanges(changes, current));
+    setCanvasEdges((current) => {
+      const next = applyEdgeChanges(changes, current);
+
+      setDefinitionEdges(
+        next.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          label: typeof edge.label === "string" ? edge.label : undefined,
+        })),
+      );
+
+      return next;
+    });
   };
 
   const onConnect: OnConnect = (connection) => {
@@ -384,14 +423,22 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
 
   const addNode = (nodeType: WorkflowNodeType) => {
     const template = paletteTemplates[nodeType];
-    const id = `node_${crypto.randomUUID().slice(0, 8)}`;
+    let nodeIndex = definitionNodes.length + 1;
+    let id = `${nodeType}_${nodeIndex}`;
+
+    while (definitionNodes.some((node) => node.id === id)) {
+      nodeIndex += 1;
+      id = `${nodeType}_${nodeIndex}`;
+    }
+
     const newNode: WorkflowCanvasNode = {
       ...template,
       id,
       position: {
-        x: 220 + definitionNodes.length * 120,
-        y: 80 + (definitionNodes.length % 3) * 140,
+        x: 100 + (definitionNodes.length % 3) * 160,
+        y: 100 + (definitionNodes.length % 4) * 120,
       },
+      config: getDefaultConfig(nodeType),
     };
 
     setDefinitionNodes((current) => [...current, newNode]);
@@ -411,28 +458,424 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
     }
   };
 
-  const postWorkflowAction = async (action: "publish" | "test-run") => {
-    const response = await fetch(`/api/workflows/${workflowId}/${action}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        definition: {
-          ...initialDefinition,
-          nodes: definitionNodes,
-          edges: definitionEdges,
-        },
-      }),
-    });
+  const postWorkflowAction = async (action: WorkflowAction) => {
+    if (action === "test-run") {
+      setTestRunStatus("RUNNING");
+      setStatusMessage("Dispatching test run...");
+    }
 
-    const body = (await response.json()) as { message?: string; error?: string };
-    setStatusMessage(body.message ?? body.error ?? "Action completed.");
+    try {
+      const response = await fetch(`/api/workflows/${workflowId}/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          definition: currentDefinition,
+        }),
+      });
+
+      const body = await readWorkflowActionResponse(response);
+
+      if (response.ok) {
+        const nextVersion =
+          body.data?.versionNumber ?? body.data?.version ?? currentVersion;
+
+        if (action === "publish") {
+          setCurrentVersion(nextVersion);
+          setPublishedVersions((current) =>
+            current.includes(nextVersion) ? current : [nextVersion, ...current],
+          );
+        }
+
+        if (action === "test-run") {
+          setTestRunStatus("SUCCESS");
+          setStatusMessage(body.message ?? "Test run succeeded.");
+        } else if (action === "activate") {
+          setStatusMessage(body.message ?? "Draft saved.");
+        } else {
+          setStatusMessage(body.message ?? "Action completed.");
+        }
+
+        return;
+      }
+
+      if (action === "test-run") {
+        setTestRunStatus("FAILED");
+      }
+
+      setStatusMessage(body.error ?? `Request failed with status ${response.status}.`);
+    } catch {
+      if (action === "test-run") {
+        setTestRunStatus("FAILED");
+      }
+
+      setStatusMessage("Workflow action failed. Try again.");
+    }
+  };
+
+  const renderConfigFields = () => {
+    if (!selectedNode) {
+      return null;
+    }
+
+    const inputClassName =
+      "mt-2 w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 text-sm outline-none";
+    const textareaClassName = `${inputClassName} min-h-28 resize-y`;
+    const labelClassName =
+      "text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--muted)]";
+
+    switch (selectedNode.nodeType) {
+      case "httpRequest": {
+        const config = selectedNode.config as HttpRequestConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>URL</span>
+              <input
+                value={config.url}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    url: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Method</span>
+              <select
+                value={config.method}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    method: event.target.value as HttpRequestConfig["method"],
+                  })
+                }
+                className={inputClassName}
+              >
+                {["GET", "POST", "PUT", "PATCH", "DELETE"].map((method) => (
+                  <option key={method} value={method}>
+                    {method}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Body template</span>
+              <textarea
+                rows={4}
+                value={config.bodyTemplate}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    bodyTemplate: event.target.value,
+                  })
+                }
+                className={textareaClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "webhookTrigger": {
+        const config = selectedNode.config as WebhookTriggerConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Source</span>
+              <input
+                value={config.source}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    source: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Webhook path</span>
+              <input
+                value={config.path}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    path: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "scheduleTrigger": {
+        const config = selectedNode.config as ScheduleTriggerConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Cron</span>
+              <input
+                value={config.cron}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    cron: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Timezone</span>
+              <input
+                value={config.timezone}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    timezone: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "slackMessage": {
+        const config = selectedNode.config as SlackMessageConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Channel</span>
+              <input
+                value={config.channel}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    channel: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Message</span>
+              <textarea
+                rows={4}
+                value={config.messageTemplate}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    messageTemplate: event.target.value,
+                  })
+                }
+                className={textareaClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "branch": {
+        const config = selectedNode.config as BranchConfig;
+
+        return (
+          <label className="block">
+            <span className={labelClassName}>Expression</span>
+            <textarea
+              rows={4}
+              value={config.expression}
+              onChange={(event) =>
+                updateSelectedNodeConfig({
+                  ...config,
+                  expression: event.target.value,
+                })
+              }
+              className={textareaClassName}
+            />
+          </label>
+        );
+      }
+      case "loop": {
+        const config = selectedNode.config as LoopConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Iterate on</span>
+              <input
+                value={config.iterateOn}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    iterateOn: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Item alias</span>
+              <input
+                value={config.itemAlias}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    itemAlias: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "googleSheetsAppend": {
+        const config = selectedNode.config as GoogleSheetsAppendConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Spreadsheet ID</span>
+              <input
+                value={config.spreadsheetId}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    spreadsheetId: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Sheet name</span>
+              <input
+                value={config.sheetName}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    sheetName: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "notionCreatePage": {
+        const config = selectedNode.config as NotionCreatePageConfig;
+
+        return (
+          <label className="block">
+            <span className={labelClassName}>Database ID</span>
+            <input
+              value={config.databaseId}
+              onChange={(event) =>
+                updateSelectedNodeConfig({
+                  ...config,
+                  databaseId: event.target.value,
+                })
+              }
+              className={inputClassName}
+            />
+          </label>
+        );
+      }
+      case "airtableCreateRecord": {
+        const config = selectedNode.config as AirtableCreateRecordConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Base ID</span>
+              <input
+                value={config.baseId}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    baseId: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Table ID</span>
+              <input
+                value={config.tableId}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    tableId: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      case "hubspotCreateRecord": {
+        const config = selectedNode.config as HubspotCreateRecordConfig;
+
+        return (
+          <>
+            <label className="block">
+              <span className={labelClassName}>Object type</span>
+              <select
+                value={config.objectType}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    objectType: event.target.value as HubspotCreateRecordConfig["objectType"],
+                  })
+                }
+                className={inputClassName}
+              >
+                {["contact", "company", "deal"].map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className={labelClassName}>Pipeline ID</span>
+              <input
+                value={config.pipelineId}
+                onChange={(event) =>
+                  updateSelectedNodeConfig({
+                    ...config,
+                    pipelineId: event.target.value,
+                  })
+                }
+                className={inputClassName}
+              />
+            </label>
+          </>
+        );
+      }
+      default:
+        return (
+          <p className="rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 text-sm text-[color:var(--muted)]">
+            This node uses generated defaults. Save or publish to keep the internal config.
+          </p>
+        );
+    }
   };
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.5fr_0.9fr]">
-      <Card className="overflow-hidden p-4">
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <Card className="min-w-0 overflow-hidden p-4 xl:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--line)] px-2 pb-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted)]">
@@ -441,19 +884,26 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
             <h2 className="mt-2 text-2xl font-semibold text-[color:var(--ink)]">
               Visual workflow builder
             </h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge variant="info">v{currentVersion}</Badge>
+              <Badge variant="warning">Draft</Badge>
+              <Badge variant={getTestRunBadgeVariant(testRunStatus)}>
+                {testRunStatus}
+              </Badge>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => {
                 startTransition(async () => {
-                  await postWorkflowAction("test-run");
+                  await postWorkflowAction("activate");
                 });
               }}
               className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:border-[color:var(--accent)]"
             >
-              <Play className="size-4" />
-              Test run
+              <Save className="size-4" />
+              Save
             </button>
             <button
               type="button"
@@ -467,10 +917,22 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
               <Save className="size-4" />
               Publish
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                startTransition(async () => {
+                  await postWorkflowAction("test-run");
+                });
+              }}
+              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:border-[color:var(--accent)]"
+            >
+              <Play className="size-4" />
+              Test run
+            </button>
           </div>
         </div>
 
-        <div className="mt-4 h-[680px] overflow-hidden rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.8),rgba(247,241,231,0.9))]">
+        <div className="mt-4 h-[680px] min-w-0 overflow-hidden rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.8),rgba(247,241,231,0.9))]">
           <ReactFlow
             nodes={canvasNodes}
             edges={canvasEdges}
@@ -499,8 +961,8 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
         </div>
       </Card>
 
-      <div className="space-y-5">
-        <Card className="p-5">
+      <div className="min-w-0 space-y-5 xl:w-[360px]">
+        <Card className="min-w-0 overflow-hidden p-5">
           <div className="flex items-center gap-2 rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-3 py-2">
             <Search className="size-4 text-[color:var(--muted)]" />
             <input
@@ -510,7 +972,8 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
               className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--muted)]"
             />
           </div>
-          <div className="mt-4 grid gap-2">
+          <div className="mt-4 max-h-[420px] overflow-y-auto pr-1">
+            <div className="grid gap-2">
             {filteredPalette.map(([nodeType, template]) => (
               <button
                 key={nodeType}
@@ -529,10 +992,32 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
                 <Plus className="size-4 text-[color:var(--accent)]" />
               </button>
             ))}
+            </div>
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="min-w-0 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted)]">
+                Versions
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-[color:var(--ink)]">
+                Published history
+              </h2>
+            </div>
+            <Badge variant="info">{publishedVersions.length} versions</Badge>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {publishedVersions.map((version) => (
+              <Badge key={version} variant={version === currentVersion ? "success" : "default"}>
+                v{version}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="min-w-0 p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted)]">
@@ -552,7 +1037,7 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
                   Label
                 </span>
                 <input
-                  value={selectedNode.label}
+                  value={selectedNode.label ?? ""}
                   onChange={(event) =>
                     updateSelectedNode((node) => ({
                       ...node,
@@ -580,27 +1065,7 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
                 />
               </label>
 
-              <label className="block">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--muted)]">
-                  Config JSON
-                </span>
-                <textarea
-                  rows={10}
-                  value={JSON.stringify(selectedNode.config, null, 2)}
-                  onChange={(event) => {
-                    try {
-                      const nextConfig = JSON.parse(event.target.value) as WorkflowCanvasNode["config"];
-                      updateSelectedNode((node) => ({
-                        ...node,
-                        config: nextConfig,
-                      }));
-                    } catch {
-                      setStatusMessage("Config JSON must stay valid.");
-                    }
-                  }}
-                  className="mt-2 w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 font-mono text-xs leading-6 outline-none"
-                />
-              </label>
+              {renderConfigFields()}
             </div>
           ) : (
             <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
@@ -609,7 +1074,7 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
           )}
         </Card>
 
-        <Card className="p-5">
+        <Card className="min-w-0 overflow-hidden p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted)]">
@@ -621,7 +1086,7 @@ function EditorInner({ workflowId, initialDefinition }: WorkflowEditorProps) {
             </div>
             <Sparkles className="size-5 text-[color:var(--accent)]" />
           </div>
-          <pre className="mt-4 max-h-80 overflow-auto rounded-[24px] bg-[color:#111b18] p-4 font-mono text-[11px] leading-6 text-white">
+          <pre className="mt-4 max-h-80 min-w-0 overflow-auto rounded-[24px] bg-[color:#111b18] p-4 font-mono text-[11px] leading-6 whitespace-pre-wrap break-all text-white">
             {compiledPreview}
           </pre>
           <div className="mt-4 flex items-center gap-2 text-sm text-[color:var(--muted)]">

@@ -5,6 +5,7 @@ import type {
   ExecutionContext,
   StepResult,
   WorkflowNodeConfig,
+  WorkflowNodeType,
 } from "@/lib/workflow/types";
 
 export type ConnectorAuthorizeResponse = {
@@ -30,7 +31,7 @@ export type ConnectorHandler<TConfig extends WorkflowNodeConfig = WorkflowNodeCo
   provider: ConnectorProvider;
   name: string;
   description: string;
-  nodeTypes: TConfig["nodeType"][];
+  nodeTypes: WorkflowNodeType[];
   configSchema: ZodType<TConfig>;
   authorize: (args: { redirectUri: string }) => Promise<ConnectorAuthorizeResponse>;
   refresh: (account: ConnectorAccountState) => Promise<ConnectorAccountState>;

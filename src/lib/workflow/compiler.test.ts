@@ -27,7 +27,6 @@ describe("compileWorkflowDefinition", () => {
             nodeType: "manualTrigger",
             position: { x: 20, y: 40 },
             config: {
-              nodeType: "manualTrigger",
               samplePayload: {},
             },
           },

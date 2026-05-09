@@ -17,7 +17,6 @@ describe("connector registry", () => {
   it("validates provider config with shared schemas", () => {
     const slack = connectorRegistry.SLACK;
     const config = slack.validateConfig({
-      nodeType: "slackMessage",
       channel: "#ops",
       messageTemplate: "Hello {{input.name}}",
     });

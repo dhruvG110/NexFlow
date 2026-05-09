@@ -11,16 +11,39 @@ import {
   getWorkflowSummaries,
 } from "@/lib/data/repository";
 import { formatRelativeDate } from "@/lib/utils";
+import type {
+  ConnectorSummary,
+  WorkflowRunSummary,
+  WorkflowSummary,
+} from "@/lib/workflow/types";
 
 export default async function DashboardPage() {
-  const [workflows, runs, connectors] = await Promise.all([
-    getWorkflowSummaries(),
-    getWorkflowRunSummaries(),
-    getConnectorSummaries(),
-  ]);
+  let workflows: WorkflowSummary[] = [];
+  let runs: WorkflowRunSummary[] = [];
+  let connectors: ConnectorSummary[] = [];
 
-  const successfulRuns = runs.filter((run) => run.status === "SUCCEEDED").length;
-  const successRate = runs.length > 0 ? Math.round((successfulRuns / runs.length) * 100) : 0;
+  try {
+    const results = await Promise.allSettled([
+      getWorkflowSummaries(),
+      getWorkflowRunSummaries(),
+      getConnectorSummaries(),
+    ]);
+
+    workflows = results[0].status === "fulfilled" ? results[0].value : [];
+    runs = results[1].status === "fulfilled" ? results[1].value : [];
+    connectors = results[2].status === "fulfilled" ? results[2].value : [];
+  } catch (error) {
+    console.error("Dashboard fatal error:", error);
+  }
+
+  const successfulRuns = runs.filter(
+    (run) => run?.status === "SUCCEEDED"
+  ).length;
+
+  const successRate =
+    runs.length > 0
+      ? Math.round((successfulRuns / runs.length) * 100)
+      : 0;
 
   return (
     <AppShell
@@ -29,7 +52,7 @@ export default async function DashboardPage() {
       description="Watch run health, workflow throughput, and connector readiness from one control surface. The demo data falls away automatically when your database and auth environment are configured."
       actions={
         <Link
-          href="/workflows/wf_customer_router"
+          href="/workflows/wf_test"
           className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d75c24]"
         >
           Open editor
@@ -40,13 +63,20 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Active workflows"
-          value={String(workflows.filter((workflow) => workflow.status === "ACTIVE").length)}
+          value={String(
+            workflows.filter((workflow) => workflow.status === "ACTIVE").length
+          )}
           caption="Live"
           tone="success"
         />
         <MetricCard
           label="Runs today"
-          value={String(workflows.reduce((sum, workflow) => sum + workflow.runsToday, 0))}
+          value={String(
+            workflows.reduce(
+              (sum, workflow) => sum + workflow.runsToday,
+              0
+            )
+          )}
           caption="Metered"
           tone="info"
         />
@@ -58,7 +88,9 @@ export default async function DashboardPage() {
         />
         <MetricCard
           label="Connected providers"
-          value={String(connectors.filter((connector) => connector.connectedAccounts > 0).length)}
+          value={String(
+            connectors.filter((connector) => connector.connectedAccounts > 0).length
+          )}
           caption="Ready"
           tone="default"
         />
@@ -81,6 +113,12 @@ export default async function DashboardPage() {
           </div>
 
           <div className="mt-6 space-y-3">
+            {workflows.length === 0 && (
+              <p className="text-sm text-[color:var(--muted)]">
+                No workflows found.
+              </p>
+            )}
+
             {workflows.map((workflow) => (
               <Link
                 key={workflow.id}
@@ -94,8 +132,8 @@ export default async function DashboardPage() {
                         workflow.status === "ACTIVE"
                           ? "success"
                           : workflow.status === "DRAFT"
-                            ? "warning"
-                            : "info"
+                          ? "warning"
+                          : "info"
                       }
                     >
                       {workflow.status}
@@ -134,7 +172,14 @@ export default async function DashboardPage() {
                 Open runs
               </Link>
             </div>
+
             <div className="mt-5 space-y-3">
+              {runs.length === 0 && (
+                <p className="text-sm text-[color:var(--muted)]">
+                  No runs found.
+                </p>
+              )}
+
               {runs.slice(0, 4).map((run) => (
                 <Link
                   key={run.id}
@@ -159,8 +204,8 @@ export default async function DashboardPage() {
                       run.status === "SUCCEEDED"
                         ? "success"
                         : run.status === "FAILED"
-                          ? "danger"
-                          : "info"
+                        ? "danger"
+                        : "info"
                     }
                   >
                     {run.status}
@@ -174,7 +219,14 @@ export default async function DashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--muted)]">
               Connector readiness
             </p>
+
             <div className="mt-4 space-y-3">
+              {connectors.length === 0 && (
+                <p className="text-sm text-[color:var(--muted)]">
+                  No connectors found.
+                </p>
+              )}
+
               {connectors.slice(0, 4).map((connector) => (
                 <div
                   key={connector.provider}
@@ -193,8 +245,8 @@ export default async function DashboardPage() {
                       connector.status === "connected"
                         ? "success"
                         : connector.status === "attention"
-                          ? "warning"
-                          : "default"
+                        ? "warning"
+                        : "default"
                     }
                   >
                     {connector.connectedAccounts}
